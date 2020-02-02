@@ -3,11 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_twilio_voice/flutter_twilio_voice.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+
+
 //import 'package:contacts_service/contacts_service.dart';
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -445,35 +448,35 @@ class Record {
   @override
   String toString() => "Record<$name:$phoneNumber>";
 }
-
-class TestClass {
-  // Find your Account Sid and Token at twilio.com/user/account
-  static final String ACCOUNT_SID = "ACf864fd035298230645b6fab4a205ca0b";
-  static final String AUTH_TOKEN = "bf7f67cf71991ee7ed0157fbf0f74783";
-  static int code;
-  static String msg;
-  static String default_msg = "come help me. This is my location:";
-
-  static void main(String[] args) {
-  Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
-  //TODO add code number depending on button activated
-  if(code == 1) {
-  msg = "I just had a stroke, " + default_msg;
-  }
-  else if(code ==2 ) {
-  msg = "I am injured, " + default_msg;
-  }
-
-  Message message = Message.creator(
-  //To
-  new PhoneNumber("+15147466682"),
-  //From
-  new PhoneNumber("+12024100780"),
-
-  msg
-  ).create();
-
-  System.out.println(message.getSid());
-  }
-}
+//
+//class TestClass {
+//  // Find your Account Sid and Token at twilio.com/user/account
+//  static final String ACCOUNT_SID = "ACf864fd035298230645b6fab4a205ca0b";
+//  static final String AUTH_TOKEN = "bf7f67cf71991ee7ed0157fbf0f74783";
+//  static int code;
+//  static String msg;
+//  static String default_msg = "come help me. This is my location:";
+//
+//   void sms() {
+//  Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
+//  //TODO add code number depending on button activated
+//  if(code == 1) {
+//  msg = "I just had a stroke, " + default_msg;
+//  }
+//  else if(code ==2 ) {
+//  msg = "I am injured, " + default_msg;
+//  }
+//
+//  Message message = Message.creator(
+//  //To
+//  new PhoneNumber("+15147466682"),
+//  //From
+//  new PhoneNumber("+12024100780"),
+//
+//  msg
+//  ).create();
+//
+//  System.out.println(message.getSid());
+//  }
+//}
 
