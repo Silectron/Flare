@@ -1,12 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'dart:developer';
+import 'package:flutter_twilio_voice/flutter_twilio_voice.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -26,6 +26,7 @@ class MyLoginPage extends StatefulWidget{
 class _MyLoginPageState extends State<MyLoginPage>{
   @override
   Widget build(BuildContext context) {
+
     return MaterialApp(
       home: Scaffold(
         body: Column(
@@ -61,7 +62,7 @@ class _MyLoginPageState extends State<MyLoginPage>{
                     fontFamily: 'Open Sans',
                     fontSize: 30),
                 ),
-                  onPressed: () { Navigator.push( context, MaterialPageRoute(builder: (context) => MyHomePage()),
+                  onPressed: () { handlePermission(); Navigator.push( context, MaterialPageRoute(builder: (context) => MyHomePage()),
                 );
               }
           ),
@@ -70,6 +71,14 @@ class _MyLoginPageState extends State<MyLoginPage>{
         ],
         ),
       ));
+  }
+
+  Future<void> handlePermission() async {
+    //Map<PermissionGroup, PermissionStatus> permissions =
+    await PermissionHandler().requestPermissions([PermissionGroup.contacts]);
+
+    //PermissionStatus permission =
+    await PermissionHandler().checkPermissionStatus(PermissionGroup.contacts);
   }
 }
 
@@ -85,11 +94,14 @@ class _MyHomePageState extends State<MyHomePage> {
   String _phoneString = '';
   String _selectedContact = '';
   String _nameString = '';
+  List<String> contactList = ["Kim", "514-222-2222", "Alex", "513-999-9999"];
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+          backgroundColor: Colors.redAccent,
           title: Text('Flare Contacts'),
           actions: <Widget> [
             Container(
@@ -98,6 +110,7 @@ class _MyHomePageState extends State<MyHomePage> {
               alignment: Alignment.centerRight,
               child: Text('Add Contact',
               style: TextStyle(fontSize: 20, color: Colors.white),
+
               ),
             ),
             IconButton(
@@ -105,17 +118,21 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: () {
                 showDialog(
                   context: context,
-                    builder: (context) {
-                      return Dialog(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            Container(
+                  builder: (context) {
+                    return Dialog(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          Container(
                               alignment: Alignment.center,
                               child: Text(
                                   'Add New Contact',
-                                  textAlign: TextAlign.center,
+                                  textAlign: TextAlign.start,
                                   style: TextStyle(
                                       fontWeight: FontWeight.w500,
                                       fontStyle: FontStyle.italic,
@@ -166,14 +183,33 @@ class _MyHomePageState extends State<MyHomePage> {
                                   style: TextStyle(fontSize: 27, color: Colors.black45, fontWeight: FontWeight.bold),
 
                                 ),
+                                onChanged: (text) {
+                                  _updatePhoneNumber(text);
+                                },
+                              )
+                          ),
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                                vertical: 16.0, horizontal: 40.0),
+                            child: RaisedButton(
+                              onPressed: () {
+                                _addNewContact(_selectedContact, _phoneString);
+                              },
+                              child: const Text(
+                                'Add',
+                                style: TextStyle(fontSize: 25,
+                                    color: Colors.black45,
+                                    fontWeight: FontWeight.bold),
+
                               ),
-                            )
-                          ],
-                        ),
-                      );
-                    },
-                  );
-                },
+                            ),
+                          )
+                        ],
+                      ),
+                    );
+                  },
+                );
+              },
 
             ),
 
@@ -219,10 +255,109 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget _buildList(BuildContext context, List<DocumentSnapshot> snapshot) {
     return ListView(
+
       padding: const EdgeInsets.only(top: 20.0),
       children: snapshot.map((data) => _buildListItem(context, data)).toList(),
     );
   }
+
+
+//  Future<void> getImportedContacts() async {
+//    //contactList = await ContactsService.getContacts(withThumbnails: false);
+//    //contactList.toList()[0] = new Contact();
+//    print(contactList.toList().length);
+//  }
+
+
+//  Widget display(String c) {
+//    return Padding(
+//        padding: const EdgeInsets.only(top: 20.0),
+//      child: Container(
+//        decoration: BoxDecoration(
+//          border: Border.all(color: Colors.grey),
+//          borderRadius: BorderRadius.circular(5.0),
+//        ),
+//        child: ListTile(
+//          title: Text(c),
+//          trailing: Text(c),
+//          onTap: () {
+//            showDialog(
+//              context: context,
+//              builder: (context) {
+//                return Dialog(
+//                  child: Column(
+//                    mainAxisAlignment: MainAxisAlignment.start,
+//                    crossAxisAlignment: CrossAxisAlignment.center,
+//                    children: <Widget>[
+//                      Container(child: Text(""),),
+//
+//
+//                      Text('Change Contact Information', style: TextStyle(
+//                          fontWeight: FontWeight.w800,
+//                          fontStyle: FontStyle.italic,
+//                          fontFamily: 'Open Sans',
+//                          fontSize: 25),),
+//                      Container(child: Text(""),),
+//                      Text("Name: " + c, textAlign: TextAlign.left, style: TextStyle(fontWeight: FontWeight.w500, fontSize: 22),),
+//                      Container(child: Text(""),),
+//                      Text("Phone number: " + c, style: TextStyle(fontWeight: FontWeight.w500,fontSize: 22),),
+//                      Container(
+//                          padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
+//                          child: TextField(
+//                            decoration: InputDecoration(
+//                                hintText: "Enter a phone number",
+//                                border: OutlineInputBorder()
+//                            ),
+//                            onChanged: (text) {
+//                              _updatePhoneNumber(text);
+//                            },
+//                          )
+//                      ),
+//                      Container(
+//                        padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 50.0),
+//                        child: RaisedButton(
+//                          onPressed: () => {},//record.reference.updateData({'phone': _phoneString}),
+//                          child: const Text(
+//                            'Change Number',
+//                            style: TextStyle(fontSize: 25, color: Colors.white, fontWeight: FontWeight.bold),
+//
+//                          ),
+//                        ),
+//                      ),
+////                      Container(child: Text(""),),
+//                      Container(
+//                        padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 40.0),
+//                        child: RaisedButton(
+//                          onPressed: () => {},//record.reference.delete(),
+//                          child: const Text(
+//                            'Remove Contact',
+//                            style: TextStyle(fontSize: 25, color: Colors.white, fontWeight: FontWeight.bold),
+//
+//                          ),
+//                        ),
+//                      )
+//                    ],
+//                  ),
+//                );
+//              },
+//            );
+//          },
+//        ),
+//      ),
+//    );
+//  }
+
+
+//  Widget _buildImportedList(context, List<String> contacts) {
+//    //int size = contacts.toList().length;
+//    if(contacts != null)
+//    contacts.forEach((c) => display(c));
+//
+//    for(int i = 1; i < size; i++) {
+//      print(contacts.toList()[i].displayName);
+//    }
+//    return(Container());
+//  }
 
   Widget _buildListItem(BuildContext context, DocumentSnapshot data) {
     final record = Record.fromSnapshot(data);
@@ -243,8 +378,12 @@ class _MyHomePageState extends State<MyHomePage> {
               context: context,
               builder: (context) {
                 return Dialog(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
                       Text('Edit Contact Information', textAlign: TextAlign.center, style: TextStyle(
@@ -291,7 +430,8 @@ class _MyHomePageState extends State<MyHomePage> {
                           onPressed: () => record.reference.updateData({'phone': _phoneString, 'name': _nameString}),
                           child: const Text(
                           'Save Changes',
-                          style: TextStyle(fontSize: 25, color: Colors.white, fontWeight: FontWeight.bold),
+                          style: TextStyle(fontSize: 25, color: Colors.black26, fontWeight: FontWeight.bold),
+
 
                           ),
                         ),
@@ -302,7 +442,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           onPressed: () => record.reference.delete(),
                           child: const Text(
                             'Remove Contact',
-                            style: TextStyle(fontSize: 25, color: Colors.white, fontWeight: FontWeight.bold),
+                            style: TextStyle(fontSize: 25, color: Colors.black26, fontWeight: FontWeight.bold),
 
                           ),
                         ),
@@ -342,6 +482,7 @@ class _MyHomePageState extends State<MyHomePage> {
       _selectedContact = text;
     });
   }
+
 }
 
 class MyEmergencyPage extends StatefulWidget{
@@ -431,6 +572,3 @@ class Record {
   String toString() => "Record<$name:$phoneNumber>";
 }
 
-class Sms {
-
-}
