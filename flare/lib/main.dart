@@ -84,18 +84,30 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
           title: Text('Flare Contacts'),
           actions: <Widget> [
-//            IconButton(
-//              icon: Icon()
-//            )
-            RaisedButton(
+            IconButton(
+              icon: Icon(Icons.add_box),
               onPressed: () {
                 showDialog(
                   context: context,
                     builder: (context) {
                       return Dialog(
                         child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: <Widget>[
-                            Text('Add New Contact'),
+                            Container(
+                              alignment: Alignment.center,
+                              child: Text(
+                                  'Add New Contact',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontStyle: FontStyle.italic,
+                                      fontFamily: 'Open Sans',
+                                      fontSize: 35
+                                  )
+                              )
+                            ),
                             Text('Name'),
                             Container(
                                 child: TextField(
@@ -130,11 +142,10 @@ class _MyHomePageState extends State<MyHomePage> {
                     },
                   );
                 },
-              child: const Text(
-                'Remove Contact',
-                style: TextStyle(fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold, height: 10),
-              ),
+
             ),
+
+            Text('Add Contact'),
           ]
       ),
       body: _buildBody(context),
