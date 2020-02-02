@@ -88,21 +88,43 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
           title: Text('Flare Contacts'),
           actions: <Widget> [
-//            IconButton(
-//              icon: Icon()
-//            )
-            RaisedButton(
+            Align(
+              alignment: Alignment.centerRight,
+              child: Text('Add Contact',
+              style: TextStyle(fontSize: 13, color: Colors.white),
+              ),
+            ),
+            IconButton(
+              icon: Icon(Icons.add_box),
               onPressed: () {
                 showDialog(
                   context: context,
                     builder: (context) {
                       return Dialog(
                         child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: <Widget>[
-                            Text('Add New Contact'),
+                            Container(
+                              alignment: Alignment.center,
+                              child: Text(
+                                  'Add New Contact',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontStyle: FontStyle.italic,
+                                      fontFamily: 'Open Sans',
+                                      fontSize: 35
+                                  )
+                              )
+                            ),
                             Text('Name'),
                             Container(
+                                padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 40.0),
                                 child: TextField(
+                                  decoration: InputDecoration(
+                                      border: OutlineInputBorder()
+                                  ),
                                   onChanged: (text) {
                                     _selectContactToUpdate(text);
                                   },
@@ -110,20 +132,25 @@ class _MyHomePageState extends State<MyHomePage> {
                             ),
                             Text('Phone Number'),
                             Container(
+                                padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 40.0),
                                 child: TextField(
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder()
+                                  ),
                                   onChanged: (text) {
                                     _updatePhoneNumber(text);
                                   },
                                 )
                             ),
                             Container(
-                              child: FlatButton(
+                              padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 40.0),
+                              child: RaisedButton(
                                 onPressed: () {
                                     _addNewContact(_selectedContact, _phoneString);
                                 },
                                 child: const Text(
                                   'Add',
-                                  style: TextStyle(fontSize: 10, color: Colors.black, fontWeight: FontWeight.bold, height: 10),
+                                  style: TextStyle(fontSize: 25, color: Colors.black45, fontWeight: FontWeight.bold),
 
                                 ),
                               ),
@@ -134,11 +161,10 @@ class _MyHomePageState extends State<MyHomePage> {
                     },
                   );
                 },
-              child: const Text(
-                'Remove Contact',
-                style: TextStyle(fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold, height: 10),
-              ),
+
             ),
+
+
           ]
       ),
       body: _buildBody(context),
