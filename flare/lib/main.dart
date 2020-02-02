@@ -1,5 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_twilio_voice/flutter_twilio_voice.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:contacts_service/contacts_service.dart';
 
 void main() => runApp(MyApp());
 
@@ -23,6 +26,7 @@ class MyLoginPage extends StatefulWidget{
 class _MyLoginPageState extends State<MyLoginPage>{
   @override
   Widget build(BuildContext context) {
+
     return MaterialApp(
       home: Scaffold(
         body: Column(
@@ -58,7 +62,7 @@ class _MyLoginPageState extends State<MyLoginPage>{
                     fontFamily: 'Open Sans',
                     fontSize: 30),
                 ),
-                  onPressed: () { Navigator.push( context, MaterialPageRoute(builder: (context) => MyHomePage()),
+                  onPressed: () { handlePermission(); Navigator.push( context, MaterialPageRoute(builder: (context) => MyHomePage()),
                 );
               }
           ),
@@ -67,6 +71,12 @@ class _MyLoginPageState extends State<MyLoginPage>{
         ],
         ),
       ));
+  }
+
+  Future<void> handlePermission() async {
+    Map<PermissionGroup, PermissionStatus> permissions = await PermissionHandler().requestPermissions([PermissionGroup.contacts]);
+
+    PermissionStatus permission = await PermissionHandler().checkPermissionStatus(PermissionGroup.contacts);
   }
 }
 
@@ -81,17 +91,18 @@ class _MyHomePageState extends State<MyHomePage> {
 
   String _phoneString = '';
   String _selectedContact = '';
+  Iterable<Contact> contactList;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
           title: Text('Flare Contacts'),
-          actions: <Widget> [
+          actions: <Widget>[
             Align(
               alignment: Alignment.centerRight,
               child: Text('Add Contact',
-              style: TextStyle(fontSize: 13, color: Colors.white),
+                style: TextStyle(fontSize: 13, color: Colors.white),
               ),
             ),
             IconButton(
@@ -99,13 +110,13 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: () {
                 showDialog(
                   context: context,
-                    builder: (context) {
-                      return Dialog(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            Container(
+                  builder: (context) {
+                    return Dialog(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          Container(
                               alignment: Alignment.center,
                               child: Text(
                                   'Add New Contact',
@@ -117,50 +128,55 @@ class _MyHomePageState extends State<MyHomePage> {
                                       fontSize: 35
                                   )
                               )
-                            ),
-                            Text('Name'),
-                            Container(
-                                padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 40.0),
-                                child: TextField(
-                                  decoration: InputDecoration(
-                                      border: OutlineInputBorder()
-                                  ),
-                                  onChanged: (text) {
-                                    _selectContactToUpdate(text);
-                                  },
-                                )
-                            ),
-                            Text('Phone Number'),
-                            Container(
-                                padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 40.0),
-                                child: TextField(
-                                  decoration: InputDecoration(
+                          ),
+                          Text('Name'),
+                          Container(
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 16.0, horizontal: 40.0),
+                              child: TextField(
+                                decoration: InputDecoration(
                                     border: OutlineInputBorder()
-                                  ),
-                                  onChanged: (text) {
-                                    _updatePhoneNumber(text);
-                                  },
-                                )
-                            ),
-                            Container(
-                              padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 40.0),
-                              child: RaisedButton(
-                                onPressed: () {
-                                    _addNewContact(_selectedContact, _phoneString);
-                                },
-                                child: const Text(
-                                  'Add',
-                                  style: TextStyle(fontSize: 25, color: Colors.black45, fontWeight: FontWeight.bold),
-
                                 ),
+                                onChanged: (text) {
+                                  _selectContactToUpdate(text);
+                                },
+                              )
+                          ),
+                          Text('Phone Number'),
+                          Container(
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 16.0, horizontal: 40.0),
+                              child: TextField(
+                                decoration: InputDecoration(
+                                    border: OutlineInputBorder()
+                                ),
+                                onChanged: (text) {
+                                  _updatePhoneNumber(text);
+                                },
+                              )
+                          ),
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                                vertical: 16.0, horizontal: 40.0),
+                            child: RaisedButton(
+                              onPressed: () {
+                                _addNewContact(_selectedContact, _phoneString);
+                              },
+                              child: const Text(
+                                'Add',
+                                style: TextStyle(fontSize: 25,
+                                    color: Colors.black45,
+                                    fontWeight: FontWeight.bold),
+
                               ),
-                            )
-                          ],
-                        ),
-                      );
-                    },
-                  );
-                },
+                            ),
+                          )
+                        ],
+                      ),
+                    );
+                  },
+                );
+              },
 
             ),
 
@@ -175,9 +191,15 @@ class _MyHomePageState extends State<MyHomePage> {
     return StreamBuilder<QuerySnapshot>(
       stream: Firestore.instance.collection('users/sarah/contact').snapshots(),
       builder: (context, snapshot) {
-        if (!snapshot.hasData) return LinearProgressIndicator();
+        if (!snapshot.hasData) {
+          getImportedContacts();
+          return (_buildImportedList(context, contactList));
+        }
 
-        return _buildList(context, snapshot.data.documents);
+        //LinearProgressIndicator();
+
+        else
+          return _buildList(context, snapshot.data.documents);
       },
     );
   }
@@ -187,6 +209,100 @@ class _MyHomePageState extends State<MyHomePage> {
       padding: const EdgeInsets.only(top: 20.0),
       children: snapshot.map((data) => _buildListItem(context, data)).toList(),
     );
+  }
+
+
+  Future<void> getImportedContacts() async {
+    contactList = await ContactsService.getContacts(withThumbnails: false);
+  }
+
+
+  Widget display(Contact c) {
+    return Padding(
+        padding: const EdgeInsets.only(top: 20.0),
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey),
+          borderRadius: BorderRadius.circular(5.0),
+        ),
+        child: ListTile(
+          title: Text(c.displayName),
+          trailing: Text(c.phones.toList()[0].toString()),
+          onTap: () {
+            showDialog(
+              context: context,
+              builder: (context) {
+                return Dialog(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Container(child: Text(""),),
+
+
+                      Text('Change Contact Information', style: TextStyle(
+                          fontWeight: FontWeight.w800,
+                          fontStyle: FontStyle.italic,
+                          fontFamily: 'Open Sans',
+                          fontSize: 25),),
+                      Container(child: Text(""),),
+                      Text("Name: " + c.displayName, textAlign: TextAlign.left, style: TextStyle(fontWeight: FontWeight.w500, fontSize: 22),),
+                      Container(child: Text(""),),
+                      Text("Phone number: " + c.phones.toList()[0].toString(), style: TextStyle(fontWeight: FontWeight.w500,fontSize: 22),),
+                      Container(
+                          padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
+                          child: TextField(
+                            decoration: InputDecoration(
+                                hintText: "Enter a phone number",
+                                border: OutlineInputBorder()
+                            ),
+                            onChanged: (text) {
+                              _updatePhoneNumber(text);
+                            },
+                          )
+                      ),
+                      Container(
+                        padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 50.0),
+                        child: RaisedButton(
+                          onPressed: () => {},//record.reference.updateData({'phone': _phoneString}),
+                          child: const Text(
+                            'Change Number',
+                            style: TextStyle(fontSize: 25, color: Colors.white, fontWeight: FontWeight.bold),
+
+                          ),
+                        ),
+                      ),
+//                      Container(child: Text(""),),
+                      Container(
+                        padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 40.0),
+                        child: RaisedButton(
+                          onPressed: () => {},//record.reference.delete(),
+                          child: const Text(
+                            'Remove Contact',
+                            style: TextStyle(fontSize: 25, color: Colors.white, fontWeight: FontWeight.bold),
+
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                );
+              },
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+
+  Widget _buildImportedList(context, Iterable<Contact> contacts) {
+    //int size = contacts.toList().length;
+    contacts.forEach((c) => display(c));
+
+//    for(int i = 1; i < size; i++) {
+//      print(contacts.toList()[i].displayName);
+//    }
   }
 
   Widget _buildListItem(BuildContext context, DocumentSnapshot data) {
@@ -288,6 +404,7 @@ class _MyHomePageState extends State<MyHomePage> {
       _selectedContact = text;
     });
   }
+
 }
 
 class Record {
