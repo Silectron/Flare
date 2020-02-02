@@ -3,10 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_twilio_voice/flutter_twilio_voice.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-
-
-//import 'package:contacts_service/contacts_service.dart';
-
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -58,8 +54,8 @@ class _MyLoginPageState extends State<MyLoginPage>{
             Container(),
             Container(),
             RaisedButton(
-                padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 40.0),
-                child: Text('Sign In With Google', style: TextStyle(
+                padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 35.0),
+                child: Text('Sign In', style: TextStyle(
                     color: Colors.grey[800],
                     fontWeight: FontWeight.w500,
                     //fontStyle: FontStyle.italic,
@@ -97,7 +93,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   String _phoneString = '';
   String _selectedContact = '';
+  String _nameString = '';
   List<String> contactList = ["Kim", "514-222-2222", "Alex", "513-999-9999"];
+
 
   @override
   Widget build(BuildContext context) {
@@ -105,11 +103,14 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
           backgroundColor: Colors.redAccent,
           title: Text('Flare Contacts'),
-          actions: <Widget>[
+          actions: <Widget> [
+            Container(
+            ),
             Align(
               alignment: Alignment.centerRight,
               child: Text('Add Contact',
-                style: TextStyle(fontSize: 13, color: Colors.white),
+              style: TextStyle(fontSize: 20, color: Colors.white),
+
               ),
             ),
             IconButton(
@@ -139,30 +140,48 @@ class _MyHomePageState extends State<MyHomePage> {
                                       fontSize: 35
                                   )
                               )
-                          ),
-                          Text('Name',
-                          style: TextStyle(fontWeight: FontWeight.w500, fontSize: 22),),
-                          Container(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 16.0, horizontal: 40.0),
-                              child: TextField(
-                                decoration: InputDecoration(
+                            ),
+                            Text('Name', style: TextStyle(fontSize: 22),),
+                            Container(
+                                padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0),
+                                child: TextField(
+                                  maxLength: 50,
+                                  decoration: InputDecoration(
+                                      hintText: "Enter a name",
+                                      icon: Icon(Icons.border_color),
+                                      border: OutlineInputBorder()
+                                  ),
+                                  onChanged: (text) {
+                                    _selectContactToUpdate(text);
+                                  },
+                                )
+                            ),
+                            Text('Phone Number', style: TextStyle(fontSize: 22),),
+                            Container(
+                                padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+                                child: TextField(
+                                  inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
+                                  keyboardType: TextInputType.number,
+                                  decoration: InputDecoration(
+                                    icon: Icon(Icons.border_color),
+                                      hintText: "Enter a phone number",
                                     border: OutlineInputBorder()
-                                ),
-                                onChanged: (text) {
-                                  _selectContactToUpdate(text);
+                                  ),
+                                  onChanged: (text) {
+                                    _updatePhoneNumber(text);
+                                  },
+                                )
+                            ),
+                            Container(
+                              padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 50.0),
+                              child: RaisedButton(
+                                onPressed: () {
+                                    _addNewContact(_selectedContact, _phoneString);
                                 },
-                              )
-                          ),
-                          Text('Phone Number',
-                          style: TextStyle(fontWeight: FontWeight.w500, fontSize: 22),
-                          ),
-                          Container(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 16.0, horizontal: 40.0),
-                              child: TextField(
-                                decoration: InputDecoration(
-                                    border: OutlineInputBorder()
+                                child: const Text(
+                                  'Add',
+                                  style: TextStyle(fontSize: 27, color: Colors.black45, fontWeight: FontWeight.bold),
+
                                 ),
                                 onChanged: (text) {
                                   _updatePhoneNumber(text);
@@ -197,7 +216,29 @@ class _MyHomePageState extends State<MyHomePage> {
 
           ]
       ),
-      body: _buildBody(context),
+
+      body:
+      _buildBody(context),
+
+      bottomSheet: Container(
+        margin: const EdgeInsets.all(10.0),
+        padding: const EdgeInsets.all(10.0),
+        //alignment: Alignment.bottomCenter,
+        child: RaisedButton(
+            padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 35.0),
+            child: Text('Send Emergency Message', style: TextStyle(
+                color: Colors.grey[800],
+                fontWeight: FontWeight.w500,
+                //fontStyle: FontStyle.italic,
+                fontFamily: 'Open Sans',
+                fontSize: 20),
+            ),
+            onPressed: () { Navigator.push( context, MaterialPageRoute(builder: (context) => MyEmergencyPage()),
+            );
+            }
+        ),
+      ),
+
     );
   }
 
@@ -205,18 +246,11 @@ class _MyHomePageState extends State<MyHomePage> {
     return StreamBuilder<QuerySnapshot>(
       stream: Firestore.instance.collection('users/sarah/contact').snapshots(),
       builder: (context, snapshot) {
-        if (!snapshot.hasData)
-//        {
-//          getImportedContacts();
-//          return (_buildImportedList(context, contactList));
-//        }
-
-        return LinearProgressIndicator();
-
-//        else
-          return _buildList(context, snapshot.data.documents);
+        if (!snapshot.hasData) return LinearProgressIndicator();
+        return _buildList(context, snapshot.data.documents);
       },
     );
+
   }
 
   Widget _buildList(BuildContext context, List<DocumentSnapshot> snapshot) {
@@ -338,7 +372,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         child: ListTile(
           title: Text(record.name),
-          trailing: Text(record.phoneNumber),
+          trailing: Text(record.phoneNumber),//
           onTap: () {
             showDialog(
               context: context,
@@ -352,42 +386,56 @@ class _MyHomePageState extends State<MyHomePage> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
-                      Container(child: Text(""),),
-
-
-                      Text('Change Contact Information', style: TextStyle(
-                      fontWeight: FontWeight.w800,
+                      Text('Edit Contact Information', textAlign: TextAlign.center, style: TextStyle(
+                      fontWeight: FontWeight.w500,
                       fontStyle: FontStyle.italic,
                       fontFamily: 'Open Sans',
-                      fontSize: 25),),
-                      Container(child: Text(""),),
-                      Text("Name: " + record.name, textAlign: TextAlign.left, style: TextStyle(fontWeight: FontWeight.w500, fontSize: 22),),
-                      Container(child: Text(""),),
-                      Text("Phone number: " + record.phoneNumber, style: TextStyle(fontWeight: FontWeight.w500,fontSize: 22),),
+                      fontSize: 30),),
+                      Text(record.name, style: TextStyle(fontSize: 22),),
                       Container(
-                          padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
+                          padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0),
+                          child: TextField(
+                            maxLength: 50,
+                            decoration: InputDecoration(
+                                hintText: "Edit name",
+                                icon: Icon(Icons.border_color),
+                                border: OutlineInputBorder()
+                            ),
+                            onChanged: (text) {
+                              _updateName(text);
+                              //_updateSelectedContact();
+                            },
+                          )
+                      ),
+                      Text(record.phoneNumber, style: TextStyle(fontSize: 22),),
+                      Container(
+                          padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0),
                         child: TextField(
+                          inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
+                          keyboardType: TextInputType.number,
                           decoration: InputDecoration(
-                            hintText: "Enter a phone number",
+                              icon: Icon(Icons.border_color),
+                            hintText: "Edit phone number",
                             border: OutlineInputBorder()
                           ),
                           onChanged: (text) {
                             _updatePhoneNumber(text);
+
                           },
                         )
                       ),
                       Container(
                         padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 50.0),
                         child: RaisedButton(
-                          onPressed: () => record.reference.updateData({'phone': _phoneString}),
+                          onPressed: () => record.reference.updateData({'phone': _phoneString, 'name': _nameString}),
                           child: const Text(
-                          'Change Number',
+                          'Save Changes',
                           style: TextStyle(fontSize: 25, color: Colors.black26, fontWeight: FontWeight.bold),
+
 
                           ),
                         ),
                       ),
-                      Container(child: Text(""),),
                       Container(
                         padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 40.0),
                         child: RaisedButton(
@@ -408,6 +456,12 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
     );
+  }
+
+  void _updateName(String text){
+    setState((){
+      _nameString = text;
+    });
   }
 
   void _updatePhoneNumber(String text) {
@@ -431,6 +485,75 @@ class _MyHomePageState extends State<MyHomePage> {
 
 }
 
+class MyEmergencyPage extends StatefulWidget{
+  @override
+  _MyEmergencyPageState createState(){
+    return _MyEmergencyPageState();
+  }
+}
+
+class _MyEmergencyPageState extends State<MyEmergencyPage>{
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+            title:Text('Emergencies')
+        ),
+        body:Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Container(child:Text("Select the emergency message you'd like to send.", style: TextStyle(fontSize: 20),)),
+            Container(
+              margin: const EdgeInsets.all(10.0),
+              padding: const EdgeInsets.all(10.0),
+              alignment: Alignment.center,
+              child:RaisedButton(
+                  onPressed: () {
+                    //Send message
+                  },
+                  padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 150.0),
+                  child: const Text('Police', style: TextStyle(fontSize: 20),
+                  )
+              )
+            ),
+            Container(child:Text("")),
+            Container(
+                margin: const EdgeInsets.all(10.0),
+                padding: const EdgeInsets.all(10.0),
+                alignment: Alignment.center,
+                child:RaisedButton(
+                    onPressed: () {
+                      //Send message
+                    },
+                    padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 150.0),
+                    child: const Text('Stroke', style: TextStyle(fontSize: 20),)
+                )
+            ),
+            Container(child:Text("")),
+            Container(
+                margin: const EdgeInsets.all(10.0),
+                padding: const EdgeInsets.all(10.0),
+                alignment: Alignment.center,
+                child:RaisedButton(
+                    onPressed: () {
+                      //Send message
+
+                    },
+                    padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 150.0),
+                    child: const Text('Injury', style: TextStyle(fontSize: 20),)
+                )
+            ),
+          ],
+        )
+      ),
+    );
+  }
+
+}
+
 class Record {
   final String name;
   final String phoneNumber;
@@ -448,35 +571,4 @@ class Record {
   @override
   String toString() => "Record<$name:$phoneNumber>";
 }
-//
-//class TestClass {
-//  // Find your Account Sid and Token at twilio.com/user/account
-//  static final String ACCOUNT_SID = "ACf864fd035298230645b6fab4a205ca0b";
-//  static final String AUTH_TOKEN = "bf7f67cf71991ee7ed0157fbf0f74783";
-//  static int code;
-//  static String msg;
-//  static String default_msg = "come help me. This is my location:";
-//
-//   void sms() {
-//  Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
-//  //TODO add code number depending on button activated
-//  if(code == 1) {
-//  msg = "I just had a stroke, " + default_msg;
-//  }
-//  else if(code ==2 ) {
-//  msg = "I am injured, " + default_msg;
-//  }
-//
-//  Message message = Message.creator(
-//  //To
-//  new PhoneNumber("+15147466682"),
-//  //From
-//  new PhoneNumber("+12024100780"),
-//
-//  msg
-//  ).create();
-//
-//  System.out.println(message.getSid());
-//  }
-//}
 
