@@ -84,3 +84,8 @@ class Record {
   @override
   String toString() => "Record<$name:$votes>";
 }
+
+class Sms {
+
+}
+
