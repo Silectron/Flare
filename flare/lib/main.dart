@@ -29,37 +29,41 @@ class _MyLoginPageState extends State<MyLoginPage>{
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
+            Container(),
             Container(
               alignment: Alignment.center,
               child:Image.asset('assets/logo.png',
-              //alignment: Alignment(200,0),
-              width: 250.0,
-              //fit: BoxFit.contain
+              width: 300.0,
             ),
             ),
             Container(
-              alignment: Alignment.center,
-              child:Text("Flare", style: TextStyle(
-                  color: Colors.grey[800],
-                  fontWeight: FontWeight.w500,
-                  fontStyle: FontStyle.italic,
-                  fontFamily: 'Open Sans',
-                  fontSize: 40),
-              )
+                alignment: Alignment.center,
+                child:Text("Flare", style: TextStyle(
+                    color: Colors.grey[800],
+                    fontWeight: FontWeight.w800,
+                    fontStyle: FontStyle.italic,
+                    fontFamily: 'Sans Serif',
+                    fontSize: 75),
+                )
             ),
+            Container(),
+            Container(),
+            Container(),
             RaisedButton(
-
-                child: Text('Login', style: TextStyle(
+                padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 40.0),
+                child: Text('Sign In With Google', style: TextStyle(
                     color: Colors.grey[800],
                     fontWeight: FontWeight.w500,
-                    fontStyle: FontStyle.italic,
+                    //fontStyle: FontStyle.italic,
                     fontFamily: 'Open Sans',
-                    fontSize: 40),
+                    fontSize: 30),
                 ),
                   onPressed: () { Navigator.push( context, MaterialPageRoute(builder: (context) => MyHomePage()),
                 );
               }
           ),
+            Container(),
+            Container(),
         ],
         ),
       ));
@@ -178,11 +182,18 @@ class _MyHomePageState extends State<MyHomePage> {
               context: context,
               builder: (context) {
                 return Dialog(
+
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
-                      Text('Change Contact Information'),
-                      Text(record.name),
-                      Text(record.phoneNumber),
+                      Text('Change Contact Information', style: TextStyle(
+                      fontWeight: FontWeight.w800,
+                      fontStyle: FontStyle.italic,
+                      fontFamily: 'Open Sans',
+                      fontSize: 25),),
+                      Text(record.name, style: TextStyle(fontWeight: FontWeight.w500, fontSize: 22),),
+                      Text(record.phoneNumber, style: TextStyle(fontWeight: FontWeight.w500,fontSize: 22),),
                       Container(
                         child: TextField(
                           onChanged: (text) {
@@ -191,21 +202,23 @@ class _MyHomePageState extends State<MyHomePage> {
                         )
                       ),
                       Container(
+                        padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 40.0),
                         child: RaisedButton(
                           onPressed: () => record.reference.updateData({'phone': _phoneString}),
                           child: const Text(
                           'Change Number',
-                          style: TextStyle(fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold, height: 10),
+                          style: TextStyle(fontSize: 25, color: Colors.white, fontWeight: FontWeight.bold),
 
                           ),
                         ),
                       ),
                       Container(
+                        padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 40.0),
                         child: RaisedButton(
                           onPressed: () => record.reference.delete(),
                           child: const Text(
                             'Remove Contact',
-                            style: TextStyle(fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold, height: 10),
+                            style: TextStyle(fontSize: 25, color: Colors.white, fontWeight: FontWeight.bold),
 
                           ),
                         ),
