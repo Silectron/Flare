@@ -208,27 +208,36 @@ class _MyHomePageState extends State<MyHomePage> {
               context: context,
               builder: (context) {
                 return Dialog(
-
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
+                      Container(child: Text(""),),
+
+
                       Text('Change Contact Information', style: TextStyle(
                       fontWeight: FontWeight.w800,
                       fontStyle: FontStyle.italic,
                       fontFamily: 'Open Sans',
                       fontSize: 25),),
-                      Text(record.name, style: TextStyle(fontWeight: FontWeight.w500, fontSize: 22),),
-                      Text(record.phoneNumber, style: TextStyle(fontWeight: FontWeight.w500,fontSize: 22),),
+                      Container(child: Text(""),),
+                      Text("Name: " + record.name, textAlign: TextAlign.left, style: TextStyle(fontWeight: FontWeight.w500, fontSize: 22),),
+                      Container(child: Text(""),),
+                      Text("Phone number: " + record.phoneNumber, style: TextStyle(fontWeight: FontWeight.w500,fontSize: 22),),
                       Container(
+                          padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
                         child: TextField(
+                          decoration: InputDecoration(
+                            hintText: "Enter a phone number",
+                            border: OutlineInputBorder()
+                          ),
                           onChanged: (text) {
                             _updatePhoneNumber(text);
                           },
                         )
                       ),
                       Container(
-                        padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 40.0),
+                        padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 50.0),
                         child: RaisedButton(
                           onPressed: () => record.reference.updateData({'phone': _phoneString}),
                           child: const Text(
@@ -238,6 +247,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           ),
                         ),
                       ),
+                      Container(child: Text(""),),
                       Container(
                         padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 40.0),
                         child: RaisedButton(
