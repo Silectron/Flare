@@ -8,8 +8,36 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flare',
-      home: MyHomePage(),
+      home: MyLoginPage(),
     );
+  }
+}
+
+class MyLoginPage extends StatefulWidget{
+  @override
+  _MyLoginPageState createState(){
+    return _MyLoginPageState();
+  }
+}
+
+class _MyLoginPageState extends State<MyLoginPage>{
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return Scaffold(
+      body: Center(
+        child: RaisedButton(
+          child: Text('LOGIN'),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => MyHomePage()),
+              );
+            }
+        ),
+      ),
+    );
+    return null;
   }
 }
 
