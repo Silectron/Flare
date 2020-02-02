@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 void main() => runApp(MyApp());
 
@@ -50,7 +51,7 @@ class _MyLoginPageState extends State<MyLoginPage>{
             Container(),
             Container(),
             RaisedButton(
-                padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 40.0),
+                padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 25.0),
                 child: Text('Sign In With Google', style: TextStyle(
                     color: Colors.grey[800],
                     fontWeight: FontWeight.w500,
@@ -88,10 +89,13 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
           title: Text('Flare Contacts'),
           actions: <Widget> [
+            Container(
+
+            ),
             Align(
               alignment: Alignment.centerRight,
               child: Text('Add Contact',
-              style: TextStyle(fontSize: 13, color: Colors.white),
+              style: TextStyle(fontSize: 20, color: Colors.white),
               ),
             ),
             IconButton(
@@ -118,11 +122,14 @@ class _MyHomePageState extends State<MyHomePage> {
                                   )
                               )
                             ),
-                            Text('Name'),
+                            Text('Name', style: TextStyle(fontSize: 22),),
                             Container(
-                                padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 40.0),
+                                padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0),
                                 child: TextField(
+                                  maxLength: 50,
                                   decoration: InputDecoration(
+                                      hintText: "Enter a name",
+                                      icon: Icon(Icons.border_color),
                                       border: OutlineInputBorder()
                                   ),
                                   onChanged: (text) {
@@ -130,11 +137,15 @@ class _MyHomePageState extends State<MyHomePage> {
                                   },
                                 )
                             ),
-                            Text('Phone Number'),
+                            Text('Phone Number', style: TextStyle(fontSize: 22),),
                             Container(
-                                padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 40.0),
+                                padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
                                 child: TextField(
+                                  inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
+                                  keyboardType: TextInputType.number,
                                   decoration: InputDecoration(
+                                    icon: Icon(Icons.border_color),
+                                      hintText: "Enter a phone number",
                                     border: OutlineInputBorder()
                                   ),
                                   onChanged: (text) {
@@ -143,14 +154,14 @@ class _MyHomePageState extends State<MyHomePage> {
                                 )
                             ),
                             Container(
-                              padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 40.0),
+                              padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 50.0),
                               child: RaisedButton(
                                 onPressed: () {
                                     _addNewContact(_selectedContact, _phoneString);
                                 },
                                 child: const Text(
                                   'Add',
-                                  style: TextStyle(fontSize: 25, color: Colors.black45, fontWeight: FontWeight.bold),
+                                  style: TextStyle(fontSize: 27, color: Colors.black45, fontWeight: FontWeight.bold),
 
                                 ),
                               ),
@@ -209,26 +220,56 @@ class _MyHomePageState extends State<MyHomePage> {
               builder: (context) {
                 return Dialog(
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
-                      Container(child: Text(""),),
+                      Text('Edit Contact Information', textAlign: TextAlign.center, style: TextStyle(
 
-
-                      Text('Change Contact Information', style: TextStyle(
-                      fontWeight: FontWeight.w800,
+                        /*
+                           Text('Name', style: TextStyle(fontSize: 22),),
+                            Container(
+                                padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0),
+                                child: TextField(
+                                  maxLength: 50,
+                                  decoration: InputDecoration(
+                                      hintText: "Enter a name",
+                                      icon: Icon(Icons.border_color),
+                                      border: OutlineInputBorder()
+                                  ),
+                                  onChanged: (text) {
+                                    _selectContactToUpdate(text);
+                                  },
+                                )
+                            ),
+                         */
+                      fontWeight: FontWeight.w500,
                       fontStyle: FontStyle.italic,
                       fontFamily: 'Open Sans',
-                      fontSize: 25),),
-                      Container(child: Text(""),),
-                      Text("Name: " + record.name, textAlign: TextAlign.left, style: TextStyle(fontWeight: FontWeight.w500, fontSize: 22),),
-                      Container(child: Text(""),),
-                      Text("Phone number: " + record.phoneNumber, style: TextStyle(fontWeight: FontWeight.w500,fontSize: 22),),
+                      fontSize: 30),),
+                      Text(record.name, style: TextStyle(fontSize: 22),),
                       Container(
-                          padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
+                          padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0),
+                          child: TextField(
+                            maxLength: 50,
+                            decoration: InputDecoration(
+                                hintText: "Edit name",
+                                icon: Icon(Icons.border_color),
+                                border: OutlineInputBorder()
+                            ),
+                            onChanged: (text) {
+                              _selectContactToUpdate(text);
+                            },
+                          )
+                      ),
+                      Text(record.phoneNumber, style: TextStyle(fontSize: 22),),
+                      Container(
+                          padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0),
                         child: TextField(
+                          inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
+                          keyboardType: TextInputType.number,
                           decoration: InputDecoration(
-                            hintText: "Enter a phone number",
+                              icon: Icon(Icons.border_color),
+                            hintText: "Edit phone number",
                             border: OutlineInputBorder()
                           ),
                           onChanged: (text) {
@@ -241,13 +282,12 @@ class _MyHomePageState extends State<MyHomePage> {
                         child: RaisedButton(
                           onPressed: () => record.reference.updateData({'phone': _phoneString}),
                           child: const Text(
-                          'Change Number',
+                          'Save Changes',
                           style: TextStyle(fontSize: 25, color: Colors.white, fontWeight: FontWeight.bold),
 
                           ),
                         ),
                       ),
-                      Container(child: Text(""),),
                       Container(
                         padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 40.0),
                         child: RaisedButton(
