@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "319239492923",
+    "firebase_url": "https://flare-e636d.firebaseio.com",
+    "project_id": "flare-e636d",
+    "storage_bucket": "flare-e636d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:319239492923:android:b8101c5f269a89b8eb131e",
+        "android_client_info": {
+          "package_name": "com.example.flare"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "319239492923-k3rjcjoqbq3o8ug0u444ade7ftar1t9r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDT1TjukP4auSh6d08S4lqQxBAdExeIMcY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "319239492923-svjosab8i8of4ganpunv4k4edjerijbe.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
