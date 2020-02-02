@@ -8,8 +8,61 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flare',
-      home: MyHomePage(),
+      home: MyLoginPage(),
     );
+  }
+}
+
+class MyLoginPage extends StatefulWidget{
+  @override
+  _MyLoginPageState createState(){
+    return _MyLoginPageState();
+  }
+}
+
+class _MyLoginPageState extends State<MyLoginPage>{
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Container(
+              alignment: Alignment.center,
+              child:Image.asset('assets/logo.png',
+              //alignment: Alignment(200,0),
+              width: 250.0,
+              //fit: BoxFit.contain
+            ),
+            ),
+            Container(
+              alignment: Alignment.center,
+              child:Text("Flare", style: TextStyle(
+                  color: Colors.grey[800],
+                  fontWeight: FontWeight.w500,
+                  fontStyle: FontStyle.italic,
+                  fontFamily: 'Open Sans',
+                  fontSize: 40),
+              )
+            ),
+            RaisedButton(
+
+                child: Text('Login', style: TextStyle(
+                    color: Colors.grey[800],
+                    fontWeight: FontWeight.w500,
+                    fontStyle: FontStyle.italic,
+                    fontFamily: 'Open Sans',
+                    fontSize: 40),
+                ),
+                  onPressed: () { Navigator.push( context, MaterialPageRoute(builder: (context) => MyHomePage()),
+                );
+              }
+          ),
+        ],
+        ),
+      ));
   }
 }
 
