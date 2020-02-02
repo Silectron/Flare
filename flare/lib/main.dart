@@ -88,6 +88,12 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
           title: Text('Flare Contacts'),
           actions: <Widget> [
+            Align(
+              alignment: Alignment.centerRight,
+              child: Text('Add Contact',
+              style: TextStyle(fontSize: 13, color: Colors.white),
+              ),
+            ),
             IconButton(
               icon: Icon(Icons.add_box),
               onPressed: () {
@@ -114,7 +120,11 @@ class _MyHomePageState extends State<MyHomePage> {
                             ),
                             Text('Name'),
                             Container(
+                                padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 40.0),
                                 child: TextField(
+                                  decoration: InputDecoration(
+                                      border: OutlineInputBorder()
+                                  ),
                                   onChanged: (text) {
                                     _selectContactToUpdate(text);
                                   },
@@ -122,20 +132,25 @@ class _MyHomePageState extends State<MyHomePage> {
                             ),
                             Text('Phone Number'),
                             Container(
+                                padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 40.0),
                                 child: TextField(
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder()
+                                  ),
                                   onChanged: (text) {
                                     _updatePhoneNumber(text);
                                   },
                                 )
                             ),
                             Container(
-                              child: FlatButton(
+                              padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 40.0),
+                              child: RaisedButton(
                                 onPressed: () {
                                     _addNewContact(_selectedContact, _phoneString);
                                 },
                                 child: const Text(
                                   'Add',
-                                  style: TextStyle(fontSize: 10, color: Colors.black, fontWeight: FontWeight.bold, height: 10),
+                                  style: TextStyle(fontSize: 25, color: Colors.black45, fontWeight: FontWeight.bold),
 
                                 ),
                               ),
@@ -149,7 +164,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
             ),
 
-            Text('Add Contact'),
+
           ]
       ),
       body: _buildBody(context),
