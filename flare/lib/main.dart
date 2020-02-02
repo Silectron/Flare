@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_twilio_voice/flutter_twilio_voice.dart';
 import 'package:permission_handler/permission_handler.dart';
+
 //import 'package:contacts_service/contacts_service.dart';
 
 void main() => runApp(MyApp());
@@ -99,6 +100,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+          backgroundColor: Colors.redAccent,
           title: Text('Flare Contacts'),
           actions: <Widget>[
             Align(
@@ -114,6 +116,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   context: context,
                   builder: (context) {
                     return Dialog(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
@@ -123,7 +128,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               alignment: Alignment.center,
                               child: Text(
                                   'Add New Contact',
-                                  textAlign: TextAlign.center,
+                                  textAlign: TextAlign.start,
                                   style: TextStyle(
                                       fontWeight: FontWeight.w500,
                                       fontStyle: FontStyle.italic,
@@ -213,6 +218,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget _buildList(BuildContext context, List<DocumentSnapshot> snapshot) {
     return ListView(
+
       padding: const EdgeInsets.only(top: 20.0),
       children: snapshot.map((data) => _buildListItem(context, data)).toList(),
     );
@@ -335,6 +341,9 @@ class _MyHomePageState extends State<MyHomePage> {
               context: context,
               builder: (context) {
                 return Dialog(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -437,7 +446,34 @@ class Record {
   String toString() => "Record<$name:$phoneNumber>";
 }
 
-class Sms {
+class TestClass {
+  // Find your Account Sid and Token at twilio.com/user/account
+  static final String ACCOUNT_SID = "ACf864fd035298230645b6fab4a205ca0b";
+  static final String AUTH_TOKEN = "bf7f67cf71991ee7ed0157fbf0f74783";
+  static int code;
+  static String msg;
+  static String default_msg = "come help me. This is my location:";
 
+  static void main(String[] args) {
+  Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
+  //TODO add code number depending on button activated
+  if(code == 1) {
+  msg = "I just had a stroke, " + default_msg;
+  }
+  else if(code ==2 ) {
+  msg = "I am injured, " + default_msg;
+  }
+
+  Message message = Message.creator(
+  //To
+  new PhoneNumber("+15147466682"),
+  //From
+  new PhoneNumber("+12024100780"),
+
+  msg
+  ).create();
+
+  System.out.println(message.getSid());
+  }
 }
 
