@@ -4,8 +4,8 @@ import com.twilio.type.PhoneNumber;
 
 public class Sms{
     // Find your Account Sid and Token at twilio.com/user/account
-    static final String ACCOUNT_SID = "ACf864fd035298230645b6fab4a205ca0b";
-    static final String AUTH_TOKEN = "bf7f67cf71991ee7ed0157fbf0f74783";
+    static final String ACCOUNT_SID = "--";
+    static final String AUTH_TOKEN = "--";
     static int code;
     static String msg;
     static String default_msg = "come help me. This is my location:";
